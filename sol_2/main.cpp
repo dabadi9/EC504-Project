@@ -14,7 +14,6 @@ void read_file(string file_name, list<struct Node *> *my_list)
     struct Node *loc;
     ifstream infile(file_name);
     bool error = false;
-    list<Node *>::iterator last_insert;
 
     getline(infile, line);
 
@@ -68,6 +67,30 @@ void read_file(string file_name, list<struct Node *> *my_list)
     }
 }
 
+int max_index(int a, int b, int c, int d, int e)
+{
+    if (a >= b && a >= c && a >= d && a >= e)
+    {
+        return 0;
+    }
+    else if (b >= c && b >= d && b >= e)
+    {
+        return 1;
+    }
+    else if (c >= d && c >= e)
+    {
+        return 2;
+    }
+    else if (d >= e)
+    {
+        return 3;
+    }
+    else
+    {
+        return 4;
+    }
+}
+
 int main(int argc, char *argv[])
 {
     char *file_name;
@@ -76,7 +99,8 @@ int main(int argc, char *argv[])
     struct Node *search, *best;
     clock_t startt, endt;
     double get_lat, get_lon, TT2;
-    unsigned int k;
+    int k, m, index, count[5];
+    list<Node *>::iterator it, checking;
 
     if (argc < 2)
     {
@@ -119,7 +143,8 @@ int main(int argc, char *argv[])
         cin >> get_lat >> get_lon;
 
         closest.clear();
-        for (unsigned int i = 0; i < k; i++)
+        m = max(k, 5);
+        for (int i = 0; i < m; i++)
         {
             best = (struct Node *)malloc(sizeof(struct Node));
             best->parent = NULL;
@@ -141,12 +166,50 @@ int main(int argc, char *argv[])
 
         cout << "Took " << TT2 << " seconds to find " << k << " nearest neighbor" << endl;
 
-        for (list<Node *>::iterator it = closest.begin(); it != closest.end(); ++it)
+        it = closest.begin();
+
+        for (int i = 0; i < k; i++)
         {
-            // cout << (*it)->lat << endl;
             cout << (*it)->state << "   " << (*it)->county << " is " << distance((*it), search) << " km away" << endl;
-            // cout << (*it)->state << "   " << (*it)->county << "   " << (*it)->lat << "   " << (*it)->lon << endl;
+            ++it;
         }
+
+        index = 5;
+
+        for (int k = 0; k < 5; k++)
+        {
+            it = closest.begin();
+            advance(it, k);
+
+            for (int i = 0; i < 5; i++)
+            {
+                if (i != k)
+                {
+                    checking = closest.begin();
+                    advance(checking, i);
+                    if ((*it)->state.compare((*checking)->state) == 0 && (*it)->county.compare((*checking)->county) == 0)
+                    {
+                        count[k]++;
+                    }
+                }
+            }
+            if (count[k] >= 3)
+            {
+                index = k;
+                break;
+            }
+        }
+
+        if (index == 5)
+        {
+            index = max_index(count[0], count[1], count[2], count[3], count[4]);
+        }
+
+        it = closest.begin();
+        advance(it, index);
+
+        cout << "\nMajority between 5 nearest points - " << (*it)->state << " " << (*it)->county << "\n"
+             << endl;
     }
 
     return 0;

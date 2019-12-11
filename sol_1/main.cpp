@@ -78,6 +78,30 @@ int read_file(string file_name, list<struct node *> *my_list)
     return i;
 }
 
+int max_index(int a, int b, int c, int d, int e)
+{
+    if (a >= b && a >= c && a >= d && a >= e)
+    {
+        return 0;
+    }
+    else if (b >= c && b >= d && b >= e)
+    {
+        return 1;
+    }
+    else if (c >= d && c >= e)
+    {
+        return 2;
+    }
+    else if (d >= e)
+    {
+        return 3;
+    }
+    else
+    {
+        return 4;
+    }
+}
+
 int main(int argc, char *argv[])
 {
     char *file_name, *outfile;
@@ -85,8 +109,8 @@ int main(int argc, char *argv[])
     clock_t startt, endt;
     unsigned int size = 0;
     double get_lat, get_lon, distance[10], TT2, x, y, d, temp_d;
-    int k;
-    struct node temp_l, current_l, closest[10];
+    int k, maximum, count[5], index;
+    struct node temp_l, current_l, closest[10], *state_county;
 
     if (argc < 2)
     {
@@ -111,7 +135,9 @@ int main(int argc, char *argv[])
         cout << "Enter latitude and longitude: ";
         cin >> get_lat >> get_lon;
 
-        for (int i = 0; i < k; i++)
+        maximum = max(k, 5);
+
+        for (int i = 0; i < maximum; i++)
         {
             distance[i] = LARGE;
         }
@@ -127,15 +153,15 @@ int main(int argc, char *argv[])
             y = (current_l.lat - get_lat);
             d = sqrt(x * x + y * y) * R;
             int j;
-            for (j = 1; j <= k; j++)
+            for (j = 1; j <= maximum; j++)
             {
-                if (d > distance[k - j])
+                if (d > distance[maximum - j])
                 {
                     break;
                 }
             }
 
-            for (int m = k - j + 1; m < k; m++)
+            for (int m = maximum - j + 1; m < maximum; m++)
             {
                 temp_l.state = closest[m].state;
                 temp_l.county = closest[m].county;
@@ -164,8 +190,37 @@ int main(int argc, char *argv[])
         for (int i = 0; i < k; i++)
         {
             cout << closest[i].state << "   " << closest[i].county << " is " << distance[i] << " km away" << endl;
-            // cout << closest[i].state << "   " << closest[i].county << "   " << closest[i].lat << "   " << closest[i].lon << endl;
         }
+
+        index = 5;
+        for (int k = 0; k < 5; k++)
+        {
+            state_county = &closest[k];
+
+            for (int i = 0; i < 5; i++)
+            {
+                if (i != k)
+                {
+                    if (state_county->state.compare(closest[i].state) == 0 && state_county->county.compare(closest[i].county) == 0)
+                    {
+                        count[k]++;
+                    }
+                }
+            }
+            if (count[k] >= 3)
+            {
+                index = k;
+                break;
+            }
+        }
+
+        if (index == 5)
+        {
+            index = max_index(count[0], count[1], count[2], count[3], count[4]);
+        }
+
+        cout << "\nMajority between 5 nearest points - " << closest[index].state << " " << closest[index].county << "\n"
+             << endl;
     }
 
     return 0;
