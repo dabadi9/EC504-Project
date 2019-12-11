@@ -15,6 +15,8 @@ cd ./sol_1/
 module load gcc
 make
 ./state_finder NationalFile_StateProvinceDecimalLatLong.txt
+Enter k (1-10): 6
+Enter latitude and longitude: 40.16482 -130.4679
 ```
 
 To run the kd-tree solution:
@@ -24,6 +26,8 @@ cd ./sol_2/
 module load gcc
 make
 ./state_finder NationalFile_StateProvinceDecimalLatLong.txt
+Enter k (1-10): 6
+Enter latitude and longitude: 40.16482 -130.4679
 ```
 
-**Disclaimer: Need at least 1.5 MB of memory in order to run.
+\*\*Disclaimer: Need at least 1.5 MB of memory in order to run.
